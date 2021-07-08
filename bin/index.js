@@ -24,10 +24,8 @@ const options = yargs
   .option('c', { alias: 'category', describe: 'Search category', type: 'string', demandOption: true })
   .argv
 
-// Print response if arguments are yes/not acceppted
-if (options.category && options.factor > 0) {
-  console.log(`Calculating for category ${options.category}...`)
-} else if (isNaN(options.factor) || options.factor <= 0) {
+// Log error if conversion factor is not in acceppted form
+if (isNaN(options.factor) || options.factor <= 0) {
   console.log('Valid Conversion Factor must be bigger than 0 ...')
   return
 }
@@ -37,7 +35,6 @@ const fetchProducts = async() => {
   const request = await axios.get(url, { headers: { Accept: 'application/json' } })
   return request.data.objects
 }
-
 
 const calculateWeight = async() => {
   // Fetch data and await response. Log error to users
@@ -69,7 +66,7 @@ const calculateWeight = async() => {
     })
 
     // Calculate average cubic weight with custom factor(options.factor)
-    // Output an interger, in grams.
+    // Output result as an interger, in grams.
     const averageW = (totalVolume*(options.factor)/(1000)/n).toFixed(0)
     var message = `Average Weight of ${options.category} is ${averageW} Grams`
   } else {
@@ -83,5 +80,7 @@ const calculateWeight = async() => {
   const msgBox = boxen(chalk.rgb(0,0,0)(message), boxenStyle )
   console.log(msgBox)
 }
+
+console.log(`Calculating for category ${options.category}...`)
 
 calculateWeight()
