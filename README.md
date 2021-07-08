@@ -30,6 +30,6 @@ Open your computer’s command prompt (Windows) or terminal (macOS/Linux), Chang
     
     <br />
 3. To uninstall the script, run:
-    ### `npm uninstall -g kogan-cli`
+    ### `npm uninstall -g .`
 
 
