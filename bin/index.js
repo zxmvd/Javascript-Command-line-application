@@ -30,21 +30,34 @@ if (isNaN(options.factor) || options.factor <= 0) {
   return
 }
 
-const url = 'http://wp8m3he1wt.s3-website-ap-southeast-2.amazonaws.com/api/products/1'
-const fetchProducts = async() => {
-  const request = await axios.get(url, { headers: { Accept: 'application/json' } })
-  return request.data.objects
+const base_url = 'http://wp8m3he1wt.s3-website-ap-southeast-2.amazonaws.com'
+const requestPage = async(pagePath) => {
+  const request = await axios.get(base_url + pagePath, { headers: { Accept: 'application/json' } })
+  return request.data
 }
 
+const getAllProducts = async() => {
+  let nextPath = '/api/products/1'
+  let products = []
+  while(nextPath){
+    try {
+      let response = await requestPage(nextPath)
+      products = products.concat(response.objects)
+      nextPath = response.next
+    }
+    catch (exception) {
+      console.log('Can\'t fetch data from provided API')
+      return
+    }
+  }
+  return products
+}
+
+
 const calculateWeight = async() => {
-  // Fetch data and await response. Log error to users
-  try {
-    var allProducts = await fetchProducts()
-  }
-  catch (exception) {
-    console.log('Can\'t fetch data from provided API')
-    return
-  }
+
+  const allProducts = await getAllProducts()
+  if(!allProducts) return
 
   const categories =  Array.from(new Set(allProducts.map(i => i.category)))
   const productsOfCategory = allProducts.filter(i => i.category===options.category)
